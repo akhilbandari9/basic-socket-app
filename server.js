@@ -1,19 +1,18 @@
-const http = require('http')
 const express = require('express')
 const app = express()
-const server = http.createServer(app)
 const path = require('path')
+const cors = require('cors')
 
+app.use(cors())
 app.use('/', express.static(path.join(__dirname, 'public')))
-
-const { Server } = require('socket.io')
-const io = new Server(server)
+const server = app.listen(3000, () => console.log('server running on 5000'))
+const io = require('socket.io')(server)
 
 io.on('connection', (socket) => {
-	console.log('User connected')
-	socket.on('chat message', (msg) => {
-		io.emit('chat message', msg)
+	socket.on('chat message', (data, callback) => {
+		socket.broadcast.emit('chat message', data)
+		callback({
+			status: 'OK',
+		})
 	})
 })
-
-server.listen(5000, () => console.log('server running on 5000'))

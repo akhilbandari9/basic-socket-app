@@ -12,14 +12,20 @@ const chatRoom = document.getElementById('chatRoomContainer')
 form.addEventListener('submit', (e) => {
 	e.preventDefault()
 	if (inputField.value) {
-		socket.emit('chat message', inputField.value)
+		socket.emit('chat message', inputField.value, (response) => {
+			console.log(response.status)
+		})
+		let msgCard = document.createElement('div')
+		msgCard.textContent = inputField.value
+		msgCard.className = toMsgCardStyles
+		chatRoom.appendChild(msgCard)
 		inputField.value = ''
 	}
+	chatRoom.scrollTop = chatRoom.scrollHeight
 })
-
-socket.on('chat message', (msg) => {
+socket.on('chat message', (message) => {
 	let msgCard = document.createElement('div')
-	msgCard.textContent = msg
+	msgCard.textContent = message
 	msgCard.className = fromMsgCardStyles
 	chatRoom.appendChild(msgCard)
 })
